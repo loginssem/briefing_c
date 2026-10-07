@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>아침 시장 브리핑</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@600;800&display=swap">
+<style>
+html{color-scheme:light}@media (prefers-color-scheme: dark){html{color-scheme:dark}}
+body{margin:0}
+[hidden]{display:none!important}
+
+/* Layout: 신문 1면처럼 넓은 본문 칼럼 + 오른쪽 고정 메모장, 휴대폰에서는 메모가 아래로 */
+:root{
+  --bg:#f3f4f1; --paper:#ffffff; --ink:#18201d; --muted:#5d6762; --line:#d9ddd8; --soft:#eceee9;
+  --accent:#0e5c5e; --accent-soft:#dcebea;
+  --up:#c8322b; --up-soft:#fbe6e4; --down:#1f5fbf; --down-soft:#e3ecfa; --warn:#a86a00; --warn-soft:#fbf0d9;
+  --f-display:"Noto Serif KR","Nanum Myeongjo",serif;
+  --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121715; --paper:#1a201e; --ink:#e7ebe8; --muted:#9aa49f; --line:#2e3633; --soft:#222a27;
+  --accent:#5cbcb9; --accent-soft:#1c3634;
+  --up:#ff6b61; --up-soft:#3a1e1c; --down:#6ea5ff; --down-soft:#1b2940; --warn:#e6a93a; --warn-soft:#352a15; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121715; --paper:#1a201e; --ink:#e7ebe8; --muted:#9aa49f; --line:#2e3633; --soft:#222a27;
+  --accent:#5cbcb9; --accent-soft:#1c3634;
+  --up:#ff6b61; --up-soft:#3a1e1c; --down:#6ea5ff; --down-soft:#1b2940; --warn:#e6a93a; --warn-soft:#352a15; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 16px 48px}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+.up{color:var(--up)} .down{color:var(--down)}
+h1,h2,h3{text-wrap:balance;margin:0}
+a{color:var(--accent)}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* masthead */
+.mast{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;border-bottom:3px double var(--ink);padding-bottom:14px}
+.mast .kicker{font-size:12px;letter-spacing:.14em;color:var(--muted);font-weight:600}
+.mast h1{font-family:var(--f-display);font-weight:800;font-size:clamp(26px,4.4vw,40px);line-height:1.15}
+.mast h1 small{font-weight:600;font-size:.55em;color:var(--muted);margin-left:8px}
+.nav{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.nav button,.nav input{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:7px 11px;cursor:pointer}
+.nav button:hover{border-color:var(--accent)}
+.nav input{cursor:text}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:thin}
+.chip{flex:none;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:3px 10px;font-size:12.5px;cursor:pointer;white-space:nowrap}
+.chip[aria-current="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.chip .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-left:5px;vertical-align:middle}
+.basis{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:12.5px;color:var(--muted);padding-top:8px}
+.basis b{color:var(--ink);font-weight:600}
+
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;margin-top:18px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+main{min-width:0;display:flex;flex-direction:column;gap:18px}
+
+/* verdict */
+.verdict{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;gap:12px}
+.verdict .head{font-family:var(--f-display);font-size:19px;font-weight:600;line-height:1.45}
+.gauge{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.gauge span{font-size:12.5px;text-align:center;padding:6px 2px;border-radius:6px;background:var(--soft);color:var(--muted)}
+.gauge span.on{font-weight:700;color:#fff}
+.gauge .on.r-매우긍정적{background:var(--up)} .gauge .on.r-긍정적{background:var(--up);opacity:.8}
+.gauge .on.r-중립{background:var(--muted)} .gauge .on.r-경계{background:var(--warn)} .gauge .on.r-부정적{background:var(--down)}
+
+section.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;border-bottom:1px solid var(--line);padding-bottom:8px}
+.sec-h h2{font-size:17px;font-weight:700}
+.sec-h .asof{font-size:12px;color:var(--muted)}
+h3{font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.04em;margin:14px 0 6px}
+ul.pts{margin:0;padding-left:18px;display:grid;gap:4px}
+p{margin:0}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;color:var(--muted);font-weight:600;white-space:nowrap}
+td.r,th.r{text-align:right}
+.na{color:var(--muted);font-style:italic}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.tile{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.tile .l{font-size:12px;color:var(--muted)} .tile .v{font-size:20px;font-weight:600} .tile .c{font-size:13px}
+
+/* rate ladder */
+.ladder{position:relative;height:64px;margin:18px 6px 6px}
+.ladder .bar{position:absolute;left:0;right:0;top:26px;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--accent-soft),var(--warn-soft),var(--up-soft))}
+.ladder .tick{position:absolute;top:18px;transform:translateX(-50%);font-size:11px;color:var(--muted);text-align:center}
+.ladder .tick i{display:block;width:1px;height:22px;background:var(--muted);margin:0 auto}
+.ladder .tick span{display:block;margin-top:2px}
+.ladder .cur{position:absolute;top:0;transform:translateX(-50%);font-size:12px;font-weight:700;color:var(--up);white-space:nowrap}
+.ladder .cur::after{content:"";display:block;width:12px;height:12px;border-radius:50%;background:var(--up);border:2px solid var(--paper);margin:4px auto 0}
+
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;white-space:nowrap}
+.p-up{background:var(--up-soft);color:var(--up)} .p-down{background:var(--down-soft);color:var(--down)}
+.p-warn{background:var(--warn-soft);color:var(--warn)} .p-neu{background:var(--soft);color:var(--muted)}
+.callout{background:var(--soft);border-radius:8px;padding:10px 12px;font-size:13.5px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.news{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.news ol{margin:0;padding-left:20px;display:grid;gap:10px}
+.news li b{display:block}
+.news .m{font-size:13px;color:var(--muted)}
+.after{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 8px 8px 0}
+.src{font-size:13px;columns:2 260px;column-gap:24px}
+.src a{display:block;break-inside:avoid;padding:2px 0}
+
+/* memo */
+aside{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+@media (max-width:900px){aside{position:static}}
+aside h2{font-size:16px;font-weight:700}
+aside .d{font-size:12.5px;color:var(--muted)}
+aside textarea{width:100%;min-height:260px;resize:vertical;border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--bg);line-height:1.6}
+aside .st{font-size:12px;color:var(--muted);min-height:1.2em}
+.memo-list{font-size:12.5px;display:flex;flex-wrap:wrap;gap:4px}
+.empty{background:var(--paper);border:1px dashed var(--line);border-radius:12px;padding:32px 20px;text-align:center;color:var(--muted)}
+.empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:6px}
+.loading{color:var(--muted);padding:24px 4px}
+@media (prefers-reduced-motion:no-preference){section.card,.verdict{animation:fade .35s ease both}}
+@keyframes fade{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}
+</style>
+</head><body>
+
+<div class="wrap">
+  <header class="mast">
+    <div>
+      <div class="kicker">한국 투자자를 위한 종합 시장 브리핑 · 매일 06:30</div>
+      <h1>아침 시장 브리핑<small id="h-date"></small></h1>
+    </div>
+    <div class="nav">
+      <button id="prev" type="button" aria-label="전날">◀</button>
+      <input id="pick" type="date" aria-label="날짜 선택">
+      <button id="next" type="button" aria-label="다음 날">▶</button>
+      <button id="today" type="button">오늘</button>
+    </div>
+  </header>
+  <div class="chips" id="chips" aria-label="브리핑이 있는 날짜"></div>
+
+  <div class="grid">
+    <main id="main"><div class="loading">브리핑을 불러오는 중…</div></main>
+    <aside aria-label="메모">
+      <h2>오늘의 메모</h2>
+      <div class="d" id="memo-date"></div>
+      <textarea id="memo" placeholder="이 날짜에 대한 생각, 매매 계획, 확인할 점을 적어 두세요. 이 브라우저에 자동 저장됩니다."></textarea>
+      <div class="st" id="memo-st"></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap"><button type="button" id="exp" class="chip">메모 내보내기</button><label class="chip" for="imp" style="cursor:pointer">메모 가져오기</label><input id="imp" type="file" accept="application/json" hidden></div>
+      <div class="d">메모가 있는 날짜</div>
+      <div class="memo-list" id="memo-list"><span class="d">아직 없음</span></div>
+    </aside>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const WD = ["일","월","화","수","목","금","토"];
+  const kst = () => { const d = new Date(Date.now() + 9*3600e3); return d.toISOString().slice(0,10); };
+  const shift = (iso, n) => { const d = new Date(iso + "T00:00:00Z"); d.setUTCDate(d.getUTCDate()+n); return d.toISOString().slice(0,10); };
+  const label = iso => { const d = new Date(iso + "T00:00:00Z"); return `${iso.slice(5,7)*1}/${iso.slice(8)*1}(${WD[d.getUTCDay()]})`; };
+  const sign = v => { const s = String(v ?? "").trim(); if (/^\+/.test(s)) return "up"; if (/^[-−]/.test(s)) return "down"; return ""; };
+  const cell = v => { const s = String(v ?? "").trim(); if (!s || s.includes("확인 불가")) return `<span class="na">${esc(s || "확인 불가")}</span>`; return esc(s); };
+  const ratingPill = r => { const k = {"매우 긍정적":"p-up","긍정적":"p-up","중립":"p-neu","경계":"p-warn","부정적":"p-down"}[r] || "p-neu"; return `<span class="pill ${k}">${esc(r)}</span>`; };
+  const flowPill = f => f === "순매수" ? `<span class="pill p-up">순매수</span>` : f === "순매도" ? `<span class="pill p-down">순매도</span>` : cell(f);
+
+  let resolved = true, db = true, uid = null, cur = kst(), unsubDoc = null, memoTimer = null, memoDirty = false;
+  let known = new Set(), memoDates = new Set();
+
+  function setDate(iso){
+    if (!iso) return;
+    cur = iso; $("#pick").value = iso;
+    $("#h-date").textContent = label(iso);
+    $("#memo-date").textContent = label(iso) + " 메모";
+    try { localStorage.setItem("mb-last", iso); } catch(e){}
+    renderChips(); loadBrief(); loadMemo();
+  }
+
+  function renderChips(){
+    const dates = [...known].sort().reverse().slice(0,30);
+    if (!dates.includes(cur)) dates.unshift(cur);
+    $("#chips").innerHTML = dates.sort().reverse().map(d =>
+      `<button class="chip" type="button" data-d="${d}" aria-current="${d===cur}">${label(d)}${memoDates.has(d)?'<span class="dot" title="메모 있음"></span>':''}</button>`).join("");
+    $("#memo-list").innerHTML = memoDates.size
+      ? [...memoDates].sort().reverse().slice(0,20).map(d=>`<button class="chip" type="button" data-d="${d}">${label(d)}</button>`).join("")
+      : '<span class="d">아직 없음</span>';
+  }
+  document.addEventListener("click", e => { const b = e.target.closest("[data-d]"); if (b) setDate(b.dataset.d); });
+  $("#prev").onclick = () => setDate(shift(cur,-1));
+  $("#next").onclick = () => setDate(shift(cur,1));
+  $("#today").onclick = () => setDate(kst());
+  $("#pick").onchange = e => setDate(e.target.value);
+
+  const cache = {};
+  function loadBrief(){
+    const want = cur;
+    $("#main").innerHTML = '<div class="loading">브리핑을 불러오는 중…</div>';
+    const p = cache[want] || (cache[want] = fetch("data/" + want + ".json", {cache:"no-cache"}).then(r => r.ok ? r.json() : null).catch(() => null));
+    p.then(b => {
+      if (want !== cur) return;
+      if (b) render(b);
+      else $("#main").innerHTML = emptyHTML(`${label(want)} 브리핑이 없습니다`,
+        want > kst() ? "아직 오지 않은 날짜입니다." : "매일 아침 6시 30분 무렵 자동으로 작성됩니다. 주말·휴장일이나 자동 작성 전 날짜에는 브리핑이 없을 수 있습니다. 위의 날짜 칩에서 작성된 날을 고르세요.");
+    });
+  }
+  const emptyHTML = (t, d) => `<div class="empty"><b>${esc(t)}</b>${esc(d)}</div>`;
+
+  function render(b){
+    const us = b.us || {}, rt = b.rates || {}, fx = b.fx || {}, oil = b.oil || {}, fr = b.foreign || {}, nw = b.news || {}, ol = b.outlook || {};
+    const R = ["부정적","경계","중립","긍정적","매우 긍정적"];
+    let h = "";
+    h += `<div class="basis" style="padding-top:0"><span>미국 기준 <b>${esc(b.usTradingDay||"확인 불가")}</b></span><span>한국 기준 <b>${esc(b.krTradingDay||"확인 불가")}</b></span><span>작성 <b>${esc(b.generatedAt||"")}</b></span></div>`;
+    h += `<div class="verdict"><div class="head">${esc(b.headline||"")}</div>
+      <div class="gauge" role="img" aria-label="한국 증시 환경: ${esc(ol.rating||"")}">${R.map(r=>`<span class="${r===ol.rating?'on r-'+r.replace(/ /g,''):''}">${r}</span>`).join("")}</div></div>`;
+
+    // 미국 증시
+    h += `<section class="card"><div class="sec-h"><h2>미국 증시</h2><span class="asof">${esc(b.usTradingDay||"")}</span></div>
+      <div class="tbl"><table><thead><tr><th>지수</th><th class="r">종가</th><th class="r">전일비</th><th class="r">등락률</th><th>비고</th></tr></thead><tbody>
+      ${(us.indices||[]).map(i=>`<tr><td><b>${esc(i.name)}</b></td><td class="r num">${cell(i.close)}</td><td class="r num ${sign(i.chg)}">${cell(i.chg)}</td><td class="r num ${sign(i.pct)}">${cell(i.pct)}</td><td>${esc(i.note||"")}</td></tr>`).join("")}
+      </tbody></table></div>
+      <h3>상승·하락 원인</h3><ul class="pts">${(us.drivers||[]).map(d=>`<li>${esc(d)}</li>`).join("")}</ul>
+      <h3>반도체 · AI</h3><div class="tbl"><table><tbody>${(us.semis||[]).map(s=>`<tr><td><b>${esc(s.name)}</b></td><td class="r num ${sign(s.move)}" style="white-space:nowrap">${cell(s.move)}</td><td>${esc(s.note||"")}</td></tr>`).join("")}</tbody></table></div>
+      ${us.semisComment?`<p class="callout" style="margin-top:10px">${esc(us.semisComment)}</p>`:""}</section>`;
+
+    // 금리
+    const lv = rt.levels || [], curv = Number(rt.current);
+    let ladder = "";
+    if (lv.length && isFinite(curv)) {
+      const lo = Math.min(...lv, curv) - .05, hi = Math.max(...lv, curv) + .05, pos = v => ((v-lo)/(hi-lo)*100).toFixed(2)+"%";
+      ladder = `<div class="ladder" aria-hidden="true"><div class="bar"></div>${lv.map(v=>`<div class="tick num" style="left:${pos(v)}"><i></i><span>${v.toFixed(2)}%</span></div>`).join("")}<div class="cur num" style="left:${pos(curv)}">${curv.toFixed(2)}%</div></div>`;
+    }
+    h += `<section class="card"><div class="sec-h"><h2>미국 10년물 국채금리</h2><span class="asof">${esc(rt.asOf||"")}</span></div>
+      <div class="tiles"><div class="tile"><div class="l">현재 금리</div><div class="v num">${cell(rt.us10y)}</div></div>
+      <div class="tile"><div class="l">전일 대비</div><div class="v num ${sign(rt.bp)}">${cell(rt.bp)}</div></div></div>
+      ${ladder}<p class="callout">${esc(rt.zone||"")}</p>
+      <h3>최근 추세</h3><div class="tbl"><table><tbody>${(rt.trend||[]).map(t=>`<tr><td style="white-space:nowrap">${esc(t.label)}</td><td class="num">${cell(t.value)}</td></tr>`).join("")}</tbody></table></div>
+      <h3>원인과 영향</h3><p>${esc(rt.analysis||"")}</p></section>`;
+
+    // 환율 + 유가
+    h += `<div class="two"><section class="card"><div class="sec-h"><h2>환율</h2><span class="asof">${esc(fx.asOf||"")}</span></div>
+      <div class="tiles"><div class="tile"><div class="l">원/달러</div><div class="v num">${cell(fx.usdkrw)}</div><div class="c num ${sign(fx.chg)}">${cell(fx.chg)}</div></div>
+      <div class="tile"><div class="l">달러인덱스</div><div class="v num" style="font-size:16px">${cell(fx.dxy)}</div><div class="c">${cell(fx.dxyNote)}</div></div></div>
+      <h3>원인 · 외국인 수급 영향</h3><p>${esc(fx.analysis||"")}</p>${fx.nightSession?`<p class="d" style="margin-top:6px;font-size:12.5px;color:var(--muted)">${esc(fx.nightSession)}</p>`:""}</section>
+      <section class="card"><div class="sec-h"><h2>국제유가</h2><span class="asof">${esc(oil.asOf||"")}</span></div>
+      <div class="tiles"><div class="tile"><div class="l">WTI</div><div class="v num">${cell(oil.wti&&oil.wti.price)}</div><div class="c num ${sign(oil.wti&&oil.wti.pct)}">${cell(oil.wti&&oil.wti.pct)}</div></div>
+      <div class="tile"><div class="l">브렌트유</div><div class="v num">${cell(oil.brent&&oil.brent.price)}</div><div class="c num ${sign(oil.brent&&oil.brent.pct)}">${cell(oil.brent&&oil.brent.pct)}</div></div></div>
+      <h3>변동 원인</h3><p>${esc(oil.cause||"")}</p>
+      <h3>한국 영향</h3><ul class="pts">${(oil.impact||[]).map(i=>`<li><b>${esc(i.area)}</b> ${esc(i.text)}</li>`).join("")}</ul></section></div>`;
+
+    // 외국인 수급
+    const stk = (arr, title) => `<h3>${title}</h3><div class="tbl"><table><thead><tr><th>종목</th><th class="r">순매수 금액</th><th class="r">순매수 주수</th><th class="r">발행주식 대비</th><th>메모</th></tr></thead><tbody>
+      ${(arr||[]).map(s=>`<tr><td><b>${esc(s.name)}</b></td><td class="r num ${sign(s.amount)}">${cell(s.amount)}</td><td class="r num">${cell(s.shares)}</td><td class="r num">${cell(s.ratio)}</td><td>${esc(s.note||"")}</td></tr>`).join("")||'<tr><td colspan="5" class="na">확인 불가</td></tr>'}</tbody></table></div>`;
+    h += `<section class="card"><div class="sec-h"><h2>외국인 한국 주식 수급</h2><span class="asof">${esc(fr.tradingDay||"")}</span></div>
+      <p class="callout">${esc(fr.basisNote||"")}</p>
+      <h3>시장별 순매수</h3><div class="tbl"><table><thead><tr><th>시장</th><th class="r">종가</th><th class="r">외국인</th><th class="r">기관</th><th class="r">개인</th><th>비고</th></tr></thead><tbody>
+      ${(fr.markets||[]).map(m=>`<tr><td><b>${esc(m.market)}</b></td><td class="r num">${cell(m.close)}</td><td class="r num ${sign(m.foreign)}"><b>${cell(m.foreign)}</b></td><td class="r num ${sign(m.inst)}">${cell(m.inst)}</td><td class="r num ${sign(m.indiv)}">${cell(m.indiv)}</td><td style="font-size:12.5px">${esc(m.note||"")}</td></tr>`).join("")}</tbody></table></div>
+      ${stk(fr.buys,"외국인 순매수 상위")}${stk(fr.sells,"외국인 순매도 상위")}
+      ${fr.rankingNote?`<p style="font-size:12.5px;color:var(--muted);margin-top:6px">${esc(fr.rankingNote)}</p>`:""}
+      <h3>업종별 수급</h3><div class="tbl"><table><tbody>${(fr.sectors||[]).map(s=>`<tr><td style="white-space:nowrap"><b>${esc(s.sector)}</b></td><td>${flowPill(s.flow)}</td><td>${esc(s.note||"")}</td></tr>`).join("")}</tbody></table></div>
+      <div class="two" style="margin-top:12px"><div class="tile"><div class="l">삼성전자</div><p>${esc(fr.samsung||"확인 불가")}</p></div><div class="tile"><div class="l">SK하이닉스</div><p>${esc(fr.hynix||"확인 불가")}</p></div></div></section>`;
+
+    // 뉴스
+    h += `<section class="card"><div class="sec-h"><h2>한국 주요 뉴스</h2><span class="asof">${label(b.date||cur)} 아침 기준</span></div><div class="news">
+      ${["경제","정치","사회","과학"].map(k=>`<div><h3 style="margin-top:0">${k}</h3><ol>${(nw[k]||[]).map(n=>`<li><b>${esc(n.title)}</b>${esc(n.body||"")}<div class="m">${esc(n.meaning||"")}</div></li>`).join("")||'<li class="na">확인 불가</li>'}</ol></div>`).join("")}</div></section>`;
+
+    // 전망
+    h += `<section class="card"><div class="sec-h"><h2>오늘의 한국 증시 전망</h2>${ratingPill(ol.rating||"")}</div><p>${esc(ol.summary||"")}</p>
+      <h3>업종별 영향</h3><div class="tbl"><table><tbody>${(ol.sectors||[]).map(s=>`<tr><td style="white-space:nowrap"><b>${esc(s.sector)}</b></td><td>${ratingPill(s.rating)}</td><td>${esc(s.note||"")}</td></tr>`).join("")}</tbody></table></div></section>`;
+
+    // 요약 표
+    h += `<section class="card"><div class="sec-h"><h2>한눈에 보기</h2></div>
+      <h3 style="margin-top:0">오늘 가장 중요한 숫자 5</h3><div class="tbl"><table><thead><tr><th>항목</th><th class="r">수치</th><th>의미</th></tr></thead><tbody>${(b.keyNumbers||[]).map(k=>`<tr><td><b>${esc(k.label)}</b></td><td class="r num">${cell(k.value)}</td><td>${esc(k.note||"")}</td></tr>`).join("")}</tbody></table></div>
+      <h3>오늘 확인할 위험 신호 3</h3><div class="tbl"><table><thead><tr><th>위험 신호</th><th>이유</th></tr></thead><tbody>${(b.risks||[]).map(k=>`<tr><td><b>${esc(k.risk)}</b></td><td>${esc(k.why)}</td></tr>`).join("")}</tbody></table></div>
+      <h3>외국인 수급 확인 종목 5</h3><div class="tbl"><table><thead><tr><th>종목</th><th>확인 포인트</th></tr></thead><tbody>${(b.watchlist||[]).map(k=>`<tr><td style="white-space:nowrap"><b>${esc(k.name)}</b></td><td>${esc(k.why)}</td></tr>`).join("")}</tbody></table></div></section>`;
+
+    if (b.afterClose) h += `<div class="after"><b>장 마감 후 확인</b><p>${esc(b.afterClose)}</p></div>`;
+    if ((b.sources||[]).length) h += `<section class="card"><div class="sec-h"><h2>출처</h2></div><div class="src">${b.sources.map(s=>`<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.title)}</a>`).join("")}</div></section>`;
+    $("#main").innerHTML = h;
+  }
+
+  // memo
+  const memoKey = d => "mb-memo-" + d;
+  function readAll(){ const o = {}; try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith("mb-memo-")) o[k.slice(8)] = localStorage.getItem(k); } } catch(e){} return o; }
+  function loadMemo(){
+    clearTimeout(memoTimer);
+    try { $("#memo").value = localStorage.getItem(memoKey(cur)) || ""; $("#memo-st").textContent = ""; }
+    catch(e){ $("#memo").value = ""; $("#memo-st").textContent = "이 브라우저는 메모 저장을 막고 있습니다."; }
+  }
+  function saveMemo(d, text){
+    try {
+      if (text.trim()) { localStorage.setItem(memoKey(d), text); memoDates.add(d); } else { localStorage.removeItem(memoKey(d)); memoDates.delete(d); }
+      if (d === cur) $("#memo-st").textContent = "저장됨 " + new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"});
+      renderChips();
+    } catch(e){ $("#memo-st").textContent = "저장하지 못했습니다(브라우저 저장 공간 차단)."; }
+  }
+  $("#exp").onclick = () => {
+    const blob = new Blob([JSON.stringify(readAll(), null, 2)], {type:"application/json"});
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "briefing-memos-" + kst() + ".json"; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  };
+  $("#imp").onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    try { const o = JSON.parse(await f.text()); let n = 0;
+      for (const [d, t] of Object.entries(o)) if (/^\d{4}-\d\d-\d\d$/.test(d) && typeof t === "string") { localStorage.setItem(memoKey(d), t); memoDates.add(d); n++; }
+      $("#memo-st").textContent = `메모 ${n}개를 가져왔습니다.`; loadMemo(); renderChips();
+    } catch(err){ $("#memo-st").textContent = "가져오기 실패: 내보내기로 만든 JSON 파일인지 확인해 주세요."; }
+    e.target.value = "";
+  };
+  $("#memo").addEventListener("input", () => {
+    memoDirty = true; const d = cur, t = $("#memo").value;
+    $("#memo-st").textContent = "입력 중…"; clearTimeout(memoTimer);
+    memoTimer = setTimeout(() => saveMemo(d, t), 1000);
+  });
+
+  // boot
+  memoDates = new Set(Object.keys(readAll()));
+  let start = kst();
+  try { const last = localStorage.getItem("mb-last"); if (last && /^\d{4}-\d\d-\d\d$/.test(last)) start = last; } catch(e){}
+  fetch("data/index.json", {cache:"no-cache"}).then(r => r.ok ? r.json() : {dates:[]}).then(j => { known = new Set(j.dates || []); renderChips(); }).catch(() => {});
+  setDate(start);
+})();
+</script>
+</body></html>
